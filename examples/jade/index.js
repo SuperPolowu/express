@@ -22,20 +22,52 @@ app.set('views', __dirname + '/views');
 // (although you can still mix and match)
 app.set('view engine', 'jade');
 
-function User(name, email) {
-  this.name = name;
-  this.email = email;
-}
+var posts=[];
+var count=0;
+app.all('/*',function(req, res, next){
+	//console.log("count:"+count++);
+	count++;
+	next();
+});
+app.get('/1/post',function(req, res){
+	res.send(posts);
+});
 
-// Dummy users
-var users = [
-    new User('tj', 'tj@vision-media.ca')
-  , new User('ciaran', 'ciaranj@gmail.com')
-  , new User('aaron', 'aaron.heckmann+github@gmail.com')
-];
 
-app.get('/', function(req, res){
-  res.render('users', { users: users });
+app.post('/1/post',function(req, res){
+	var subject;
+	var content;
+	if (typeof(req.body) === 'undefined') {
+		subject = req.query.subject;
+		content = req.query.content;
+	}
+
+	var post={
+		//前面的值為Key 所以不一定要加上“”
+		subject:subject,
+		content:content
+	};
+
+	posts.push(post);
+	//res.send(posts);
+	res.send({status:"OK",posts:posts,count:count});
+});
+
+
+
+app.get('/1/post',function(req, res){
+
+});
+app.put('/1/post/:postId',function(req, res){
+	var id=req.params.postId;
+	res.send("Update a post: "+id);
+});
+app.delete('/1/post',function(req, res){
+	var result={
+		title:"Delete",
+		content:"true"
+	};
+	res.send(result);
 });
 
 // change this to a better error handler in your code
